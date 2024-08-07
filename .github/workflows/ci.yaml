@@ -25,7 +25,7 @@ jobs:
           echo "LOADING KEY -------------------------------"
           echo "${{ secrets.DOCKERHUB_DELEGATED_KEY}}" > repo.key
           chmod 600 repo.key
-          docker trust key load repo.key
+          yes "${{ secrets.DOCKERHUB_DELEGATED_KEY_PASSPHRASE  }}" | docker trust key load repo.key
           echo "KEY LOADED -------------------------------"
 
           tree ~/.docker/trust
