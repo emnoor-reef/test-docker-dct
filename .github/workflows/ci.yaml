@@ -4,7 +4,6 @@ on:
     branches: [master, main]
   pull_request:
     branches: [master, main]
-  workflow_dispatch:
 jobs:
   ci:
     runs-on: ubuntu-latest
@@ -20,28 +19,14 @@ jobs:
           IMAGE_NAME="$IMAGE_REPO:$IMAGE_TAG"
           export DOCKER_CONTENT_TRUST=1
 
-          echo "LOGGING INTO DOCKERHUB -------------------------------"
           echo "${{ secrets.DOCKERHUB_KEY }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
-          echo "LOGGED IN -------------------------------"
 
-          echo "LOADING KEY -------------------------------"
           echo "${{ secrets.DOCKERHUB_DELEGATED_KEY}}" > repo.key
-          # chmod 600 repo.key
+          chmod 600 repo.key
           # echo "${{ secrets.DOCKERHUB_DELEGATED_KEY_PASSPHRASE  }}" | docker trust key load repo.key
           mkdir -p ~/.docker/trust/private
           cp repo.key ~/.docker/trust/private/c9709c9fd1937ea0996034b7c7f08789f9bb99066fb054753ea604720388ae15.key
-          echo "KEY LOADED -------------------------------"
 
           docker trust inspect --pretty "$IMAGE_REPO" || true
-
-          tree ~/.docker/trust
-          echo
-          for f in ~/.docker/trust/private/*; do echo "$f"; cat "$f"; echo; done
-
-          echo "HERE ---- will build"
           docker build -t "$IMAGE_NAME" .
-          echo "HERE ---- built"
-
-          echo "HERE ---- will push"
           echo "${{ secrets.DOCKERHUB_DELEGATED_KEY_PASSPHRASE  }}" | docker push "$IMAGE_NAME"
-          echo "HERE ---- pushed"
