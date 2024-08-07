@@ -25,11 +25,11 @@ jobs:
           echo "LOGGED IN -------------------------------"
 
           echo "LOADING KEY -------------------------------"
-          # echo "${{ secrets.DOCKERHUB_DELEGATED_KEY}}" > repo.key
+          echo "${{ secrets.DOCKERHUB_DELEGATED_KEY}}" > repo.key
           # chmod 600 repo.key
           # echo "${{ secrets.DOCKERHUB_DELEGATED_KEY_PASSPHRASE  }}" | docker trust key load repo.key
           mkdir -p ~/.docker/trust/private
-          echo "${{ secrets.DOCKERHUB_DELEGATED_KEY }}" >> ~/.docker/trust/private/c9709c9fd1937ea0996034b7c7f08789f9bb99066fb054753ea604720388ae15.key
+          echo repo.key ~/.docker/trust/private/c9709c9fd1937ea0996034b7c7f08789f9bb99066fb054753ea604720388ae15.key
           echo "KEY LOADED -------------------------------"
 
           docker trust inspect --pretty "$IMAGE_REPO" || true
