@@ -23,7 +23,8 @@ jobs:
           echo "${{ secrets.DOCKERHUB_KEY }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
 
           mkdir -p $(dirname "$DELEGATION_KEY_FILE")
-          echo "${{ secrets.DOCKERHUB_DELEGATED_KEY}}" > "$DELEGATION_KEY_FILE"
+          # echo "${{ secrets.DOCKERHUB_DELEGATED_KEY }}" > "$DELEGATION_KEY_FILE"
+          cat <<< "${{ secrets.DOCKERHUB_DELEGATED_KEY }}" > "$DELEGATION_KEY_FILE"
           chmod 600 "$DELEGATION_KEY_FILE"
 
           # echo "${{ secrets.DOCKERHUB_DELEGATED_KEY}}" > repo.key
