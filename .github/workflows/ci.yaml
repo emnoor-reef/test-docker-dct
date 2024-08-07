@@ -25,7 +25,7 @@ jobs:
           chmod 600 repo.key
           # echo "${{ secrets.DOCKERHUB_DELEGATED_KEY_PASSPHRASE  }}" | docker trust key load repo.key
           mkdir -p ~/.docker/trust/private
-          cp repo.key ~/.docker/trust/private/c9709c9fd1937ea0996034b7c7f08789f9bb99066fb054753ea604720388ae15.key
+          cp repo.key ~/.docker/trust/private/${{ secrets.DOCKERHUB_DELEGATED_KEY_ID }}.key
 
           docker trust inspect --pretty "$IMAGE_REPO" || true
           docker build -t "$IMAGE_NAME" .
