@@ -15,7 +15,9 @@ jobs:
       - name: Docker build and push
         run: |
           set -euxo pipefail
-          IMAGE_NAME=emnoorreef/test-docker-dct:$(date +%s)
+          IMAGE_REPO=emnoorreef/test-docker-dct
+          IMAGE_TAG=$(date +%s)
+          IMAGE_NAME="$IMAGE_REPO:$IMAGE_TAG"
           export DOCKER_CONTENT_TRUST=1
 
           echo "LOGGING INTO DOCKERHUB -------------------------------"
@@ -27,6 +29,8 @@ jobs:
           chmod 600 repo.key
           echo "${{ secrets.DOCKERHUB_DELEGATED_KEY_PASSPHRASE  }}" | docker trust key load repo.key
           echo "KEY LOADED -------------------------------"
+
+          docker trust inspect --pretty "$IMAGE_REPO" || true
 
           tree ~/.docker/trust
           echo
