@@ -1,2 +1,2 @@
 FROM alpine
-RUN ["echo", "1"]
+CMD ["sh", "-c", "echo 2 && while sleep 1; do date; done"]

@@ -1,0 +1,41 @@
+name: CI
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+  workflow_dispatch:
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Docker build and push
+        run: |
+          set -euxo pipefail
+          IMAGE_NAME=emnoorreef/test-docker-dct:$(date +%s)
+          export DOCKER_CONTENT_TRUST=1
+
+          echo "LOGGING INTO DOCKERHUB -------------------------------"
+          echo "${{ secrets.DOCKERHUB_KEY }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+          echo "LOGGED IN -------------------------------"
+
+          echo "LOADING KEY -------------------------------"
+          echo "${{ secrets.DOCKERHUB_DELEGATED_KEY}}" > repo.key
+          chmod 600 repo.key
+          docker trust key load repo.key
+          echo "KEY LOADED -------------------------------"
+
+          tree ~/.docker/trust
+          echo
+          for f in ~/.docker/trust/private/*; do echo "$f"; cat "$f"; echo; done
+
+          echo "HERE ---- will build"
+          docker build -t "$IMAGE_NAME" .
+          echo "HERE ---- built"
+
+          echo "HERE ---- will push"
+          echo "${{ secrets.DOCKERHUB_DELEGATED_KEY_PASSPHRASE  }}" | docker push "$IMAGE_NAME"
+          echo "HERE ---- pushed"
